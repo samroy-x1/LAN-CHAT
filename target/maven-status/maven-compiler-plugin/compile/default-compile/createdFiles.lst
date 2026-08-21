@@ -1,0 +1,16 @@
+com/campuschat/exception/ChatException.class
+com/campuschat/service/ChatService.class
+com/campuschat/CampusChatApplication.class
+com/campuschat/model/ServerInfo.class
+com/campuschat/controller/ChatController.class
+com/campuschat/model/FileMetadata.class
+com/campuschat/controller/FileController.class
+com/campuschat/websocket/WebSocketEventListener.class
+com/campuschat/controller/ServerInfoController.class
+com/campuschat/model/ChatMessage$MessageType.class
+com/campuschat/model/ChatMessage.class
+com/campuschat/service/NetworkService.class
+com/campuschat/config/WebSocketConfig.class
+com/campuschat/service/FileStorageService.class
+com/campuschat/exception/GlobalExceptionHandler.class
+com/campuschat/model/User.class

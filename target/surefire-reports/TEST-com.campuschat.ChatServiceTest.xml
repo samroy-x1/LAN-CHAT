@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.campuschat.ChatServiceTest" time="0.061" tests="11" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="21"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.class.path" value="/Users/samstanleya/develop/LAN CHAT_JAVA/target/test-classes:/Users/samstanleya/develop/LAN CHAT_JAVA/target/classes:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-starter-web/3.3.2/spring-boot-starter-web-3.3.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-starter/3.3.2/spring-boot-starter-3.3.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot/3.3.2/spring-boot-3.3.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-autoconfigure/3.3.2/spring-boot-autoconfigure-3.3.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-starter-logging/3.3.2/spring-boot-starter-logging-3.3.2.jar:/Users/samstanleya/.m2/repository/ch/qos/logback/logback-classic/1.5.6/logback-classic-1.5.6.jar:/Users/samstanleya/.m2/repository/ch/qos/logback/logback-core/1.5.6/logback-core-1.5.6.jar:/Users/samstanleya/.m2/repository/org/apache/logging/log4j/log4j-to-slf4j/2.23.1/log4j-to-slf4j-2.23.1.jar:/Users/samstanleya/.m2/repository/org/apache/logging/log4j/log4j-api/2.23.1/log4j-api-2.23.1.jar:/Users/samstanleya/.m2/repository/org/slf4j/jul-to-slf4j/2.0.13/jul-to-slf4j-2.0.13.jar:/Users/samstanleya/.m2/repository/jakarta/annotation/jakarta.annotation-api/2.1.1/jakarta.annotation-api-2.1.1.jar:/Users/samstanleya/.m2/repository/org/yaml/snakeyaml/2.2/snakeyaml-2.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-starter-json/3.3.2/spring-boot-starter-json-3.3.2.jar:/Users/samstanleya/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.17.2/jackson-datatype-jdk8-2.17.2.jar:/Users/samstanleya/.m2/repository/com/fasterxml/jackson/module/jackson-module-parameter-names/2.17.2/jackson-module-parameter-names-2.17.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-starter-tomcat/3.3.2/spring-boot-starter-tomcat-3.3.2.jar:/Users/samstanleya/.m2/repository/org/apache/tomcat/embed/tomcat-embed-core/10.1.26/tomcat-embed-core-10.1.26.jar:/Users/samstanleya/.m2/repository/org/apache/tomcat/embed/tomcat-embed-el/10.1.26/tomcat-embed-el-10.1.26.jar:/Users/samstanleya/.m2/repository/org/apache/tomcat/embed/tomcat-embed-websocket/10.1.26/tomcat-embed-websocket-10.1.26.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-web/6.1.11/spring-web-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-beans/6.1.11/spring-beans-6.1.11.jar:/Users/samstanleya/.m2/repository/io/micrometer/micrometer-observation/1.13.2/micrometer-observation-1.13.2.jar:/Users/samstanleya/.m2/repository/io/micrometer/micrometer-commons/1.13.2/micrometer-commons-1.13.2.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-webmvc/6.1.11/spring-webmvc-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-aop/6.1.11/spring-aop-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-context/6.1.11/spring-context-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-expression/6.1.11/spring-expression-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-starter-websocket/3.3.2/spring-boot-starter-websocket-3.3.2.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-messaging/6.1.11/spring-messaging-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-websocket/6.1.11/spring-websocket-6.1.11.jar:/Users/samstanleya/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.17.2/jackson-databind-2.17.2.jar:/Users/samstanleya/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.17.2/jackson-annotations-2.17.2.jar:/Users/samstanleya/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.17.2/jackson-core-2.17.2.jar:/Users/samstanleya/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.17.2/jackson-datatype-jsr310-2.17.2.jar:/Users/samstanleya/.m2/repository/com/google/zxing/core/3.5.3/core-3.5.3.jar:/Users/samstanleya/.m2/repository/com/google/zxing/javase/3.5.3/javase-3.5.3.jar:/Users/samstanleya/.m2/repository/com/beust/jcommander/1.82/jcommander-1.82.jar:/Users/samstanleya/.m2/repository/com/github/jai-imageio/jai-imageio-core/1.4.0/jai-imageio-core-1.4.0.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-starter-test/3.3.2/spring-boot-starter-test-3.3.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-test/3.3.2/spring-boot-test-3.3.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-test-autoconfigure/3.3.2/spring-boot-test-autoconfigure-3.3.2.jar:/Users/samstanleya/.m2/repository/com/jayway/jsonpath/json-path/2.9.0/json-path-2.9.0.jar:/Users/samstanleya/.m2/repository/org/slf4j/slf4j-api/2.0.13/slf4j-api-2.0.13.jar:/Users/samstanleya/.m2/repository/jakarta/xml/bind/jakarta.xml.bind-api/4.0.2/jakarta.xml.bind-api-4.0.2.jar:/Users/samstanleya/.m2/repository/jakarta/activation/jakarta.activation-api/2.1.3/jakarta.activation-api-2.1.3.jar:/Users/samstanleya/.m2/repository/net/minidev/json-smart/2.5.1/json-smart-2.5.1.jar:/Users/samstanleya/.m2/repository/net/minidev/accessors-smart/2.5.1/accessors-smart-2.5.1.jar:/Users/samstanleya/.m2/repository/org/ow2/asm/asm/9.6/asm-9.6.jar:/Users/samstanleya/.m2/repository/org/assertj/assertj-core/3.25.3/assertj-core-3.25.3.jar:/Users/samstanleya/.m2/repository/net/bytebuddy/byte-buddy/1.14.18/byte-buddy-1.14.18.jar:/Users/samstanleya/.m2/repository/org/awaitility/awaitility/4.2.1/awaitility-4.2.1.jar:/Users/samstanleya/.m2/repository/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar:/Users/samstanleya/.m2/repository/org/junit/jupiter/junit-jupiter/5.10.3/junit-jupiter-5.10.3.jar:/Users/samstanleya/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.10.3/junit-jupiter-api-5.10.3.jar:/Users/samstanleya/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/Users/samstanleya/.m2/repository/org/junit/platform/junit-platform-commons/1.10.3/junit-platform-commons-1.10.3.jar:/Users/samstanleya/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/samstanleya/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.10.3/junit-jupiter-params-5.10.3.jar:/Users/samstanleya/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.10.3/junit-jupiter-engine-5.10.3.jar:/Users/samstanleya/.m2/repository/org/junit/platform/junit-platform-engine/1.10.3/junit-platform-engine-1.10.3.jar:/Users/samstanleya/.m2/repository/org/mockito/mockito-core/5.11.0/mockito-core-5.11.0.jar:/Users/samstanleya/.m2/repository/net/bytebuddy/byte-buddy-agent/1.14.18/byte-buddy-agent-1.14.18.jar:/Users/samstanleya/.m2/repository/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/Users/samstanleya/.m2/repository/org/mockito/mockito-junit-jupiter/5.11.0/mockito-junit-jupiter-5.11.0.jar:/Users/samstanleya/.m2/repository/org/skyscreamer/jsonassert/1.5.3/jsonassert-1.5.3.jar:/Users/samstanleya/.m2/repository/com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-core/6.1.11/spring-core-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-jcl/6.1.11/spring-jcl-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-test/6.1.11/spring-test-6.1.11.jar:/Users/samstanleya/.m2/repository/org/xmlunit/xmlunit-core/2.9.1/xmlunit-core-2.9.1.jar:"/>
+    <property name="java.vm.vendor" value="Homebrew"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.vendor.url" value="https://github.com/Homebrew/homebrew-core/issues"/>
+    <property name="user.timezone" value="Asia/Kolkata"/>
+    <property name="os.name" value="Mac OS X"/>
+    <property name="java.vm.specification.version" value="21"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="IN"/>
+    <property name="sun.boot.library.path" value="/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/lib"/>
+    <property name="sun.java.command" value="/Users/samstanleya/develop/LAN CHAT_JAVA/target/surefire/surefirebooter-20260819132523558_3.jar /Users/samstanleya/develop/LAN CHAT_JAVA/target/surefire 2026-08-19T13-25-23_527-jvmRun1 surefire-20260819132523558_1tmp surefire_0-20260819132523558_2tmp"/>
+    <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="/Users/samstanleya/develop/LAN CHAT_JAVA/target/test-classes:/Users/samstanleya/develop/LAN CHAT_JAVA/target/classes:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-starter-web/3.3.2/spring-boot-starter-web-3.3.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-starter/3.3.2/spring-boot-starter-3.3.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot/3.3.2/spring-boot-3.3.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-autoconfigure/3.3.2/spring-boot-autoconfigure-3.3.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-starter-logging/3.3.2/spring-boot-starter-logging-3.3.2.jar:/Users/samstanleya/.m2/repository/ch/qos/logback/logback-classic/1.5.6/logback-classic-1.5.6.jar:/Users/samstanleya/.m2/repository/ch/qos/logback/logback-core/1.5.6/logback-core-1.5.6.jar:/Users/samstanleya/.m2/repository/org/apache/logging/log4j/log4j-to-slf4j/2.23.1/log4j-to-slf4j-2.23.1.jar:/Users/samstanleya/.m2/repository/org/apache/logging/log4j/log4j-api/2.23.1/log4j-api-2.23.1.jar:/Users/samstanleya/.m2/repository/org/slf4j/jul-to-slf4j/2.0.13/jul-to-slf4j-2.0.13.jar:/Users/samstanleya/.m2/repository/jakarta/annotation/jakarta.annotation-api/2.1.1/jakarta.annotation-api-2.1.1.jar:/Users/samstanleya/.m2/repository/org/yaml/snakeyaml/2.2/snakeyaml-2.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-starter-json/3.3.2/spring-boot-starter-json-3.3.2.jar:/Users/samstanleya/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.17.2/jackson-datatype-jdk8-2.17.2.jar:/Users/samstanleya/.m2/repository/com/fasterxml/jackson/module/jackson-module-parameter-names/2.17.2/jackson-module-parameter-names-2.17.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-starter-tomcat/3.3.2/spring-boot-starter-tomcat-3.3.2.jar:/Users/samstanleya/.m2/repository/org/apache/tomcat/embed/tomcat-embed-core/10.1.26/tomcat-embed-core-10.1.26.jar:/Users/samstanleya/.m2/repository/org/apache/tomcat/embed/tomcat-embed-el/10.1.26/tomcat-embed-el-10.1.26.jar:/Users/samstanleya/.m2/repository/org/apache/tomcat/embed/tomcat-embed-websocket/10.1.26/tomcat-embed-websocket-10.1.26.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-web/6.1.11/spring-web-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-beans/6.1.11/spring-beans-6.1.11.jar:/Users/samstanleya/.m2/repository/io/micrometer/micrometer-observation/1.13.2/micrometer-observation-1.13.2.jar:/Users/samstanleya/.m2/repository/io/micrometer/micrometer-commons/1.13.2/micrometer-commons-1.13.2.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-webmvc/6.1.11/spring-webmvc-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-aop/6.1.11/spring-aop-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-context/6.1.11/spring-context-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-expression/6.1.11/spring-expression-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-starter-websocket/3.3.2/spring-boot-starter-websocket-3.3.2.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-messaging/6.1.11/spring-messaging-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-websocket/6.1.11/spring-websocket-6.1.11.jar:/Users/samstanleya/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.17.2/jackson-databind-2.17.2.jar:/Users/samstanleya/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.17.2/jackson-annotations-2.17.2.jar:/Users/samstanleya/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.17.2/jackson-core-2.17.2.jar:/Users/samstanleya/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.17.2/jackson-datatype-jsr310-2.17.2.jar:/Users/samstanleya/.m2/repository/com/google/zxing/core/3.5.3/core-3.5.3.jar:/Users/samstanleya/.m2/repository/com/google/zxing/javase/3.5.3/javase-3.5.3.jar:/Users/samstanleya/.m2/repository/com/beust/jcommander/1.82/jcommander-1.82.jar:/Users/samstanleya/.m2/repository/com/github/jai-imageio/jai-imageio-core/1.4.0/jai-imageio-core-1.4.0.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-starter-test/3.3.2/spring-boot-starter-test-3.3.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-test/3.3.2/spring-boot-test-3.3.2.jar:/Users/samstanleya/.m2/repository/org/springframework/boot/spring-boot-test-autoconfigure/3.3.2/spring-boot-test-autoconfigure-3.3.2.jar:/Users/samstanleya/.m2/repository/com/jayway/jsonpath/json-path/2.9.0/json-path-2.9.0.jar:/Users/samstanleya/.m2/repository/org/slf4j/slf4j-api/2.0.13/slf4j-api-2.0.13.jar:/Users/samstanleya/.m2/repository/jakarta/xml/bind/jakarta.xml.bind-api/4.0.2/jakarta.xml.bind-api-4.0.2.jar:/Users/samstanleya/.m2/repository/jakarta/activation/jakarta.activation-api/2.1.3/jakarta.activation-api-2.1.3.jar:/Users/samstanleya/.m2/repository/net/minidev/json-smart/2.5.1/json-smart-2.5.1.jar:/Users/samstanleya/.m2/repository/net/minidev/accessors-smart/2.5.1/accessors-smart-2.5.1.jar:/Users/samstanleya/.m2/repository/org/ow2/asm/asm/9.6/asm-9.6.jar:/Users/samstanleya/.m2/repository/org/assertj/assertj-core/3.25.3/assertj-core-3.25.3.jar:/Users/samstanleya/.m2/repository/net/bytebuddy/byte-buddy/1.14.18/byte-buddy-1.14.18.jar:/Users/samstanleya/.m2/repository/org/awaitility/awaitility/4.2.1/awaitility-4.2.1.jar:/Users/samstanleya/.m2/repository/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar:/Users/samstanleya/.m2/repository/org/junit/jupiter/junit-jupiter/5.10.3/junit-jupiter-5.10.3.jar:/Users/samstanleya/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.10.3/junit-jupiter-api-5.10.3.jar:/Users/samstanleya/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/Users/samstanleya/.m2/repository/org/junit/platform/junit-platform-commons/1.10.3/junit-platform-commons-1.10.3.jar:/Users/samstanleya/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/samstanleya/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.10.3/junit-jupiter-params-5.10.3.jar:/Users/samstanleya/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.10.3/junit-jupiter-engine-5.10.3.jar:/Users/samstanleya/.m2/repository/org/junit/platform/junit-platform-engine/1.10.3/junit-platform-engine-1.10.3.jar:/Users/samstanleya/.m2/repository/org/mockito/mockito-core/5.11.0/mockito-core-5.11.0.jar:/Users/samstanleya/.m2/repository/net/bytebuddy/byte-buddy-agent/1.14.18/byte-buddy-agent-1.14.18.jar:/Users/samstanleya/.m2/repository/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/Users/samstanleya/.m2/repository/org/mockito/mockito-junit-jupiter/5.11.0/mockito-junit-jupiter-5.11.0.jar:/Users/samstanleya/.m2/repository/org/skyscreamer/jsonassert/1.5.3/jsonassert-1.5.3.jar:/Users/samstanleya/.m2/repository/com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-core/6.1.11/spring-core-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-jcl/6.1.11/spring-jcl-6.1.11.jar:/Users/samstanleya/.m2/repository/org/springframework/spring-test/6.1.11/spring-test-6.1.11.jar:/Users/samstanleya/.m2/repository/org/xmlunit/xmlunit-core/2.9.1/xmlunit-core-2.9.1.jar:"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="/Users/samstanleya"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2026-04-21"/>
+    <property name="java.home" value="/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home"/>
+    <property name="file.separator" value="/"/>
+    <property name="basedir" value="/Users/samstanleya/develop/LAN CHAT_JAVA"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="apple.awt.application.name" value="ForkedBooter"/>
+    <property name="surefire.real.class.path" value="/Users/samstanleya/develop/LAN CHAT_JAVA/target/surefire/surefirebooter-20260819132523558_3.jar"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="java.runtime.version" value="21.0.11"/>
+    <property name="user.name" value="samstanleya"/>
+    <property name="stdout.encoding" value="UTF-8"/>
+    <property name="path.separator" value=":"/>
+    <property name="os.version" value="26.5.2"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="java.vendor.version" value="Homebrew"/>
+    <property name="localRepository" value="/Users/samstanleya/.m2/repository"/>
+    <property name="java.vendor.url.bug" value="https://github.com/Homebrew/homebrew-core/issues"/>
+    <property name="java.io.tmpdir" value="/var/folders/b9/b1bqyq893zs5lh66kkq54gtr0000gn/T/"/>
+    <property name="java.version" value="21.0.11"/>
+    <property name="user.dir" value="/Users/samstanleya/develop/LAN CHAT_JAVA"/>
+    <property name="os.arch" value="aarch64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="native.encoding" value="UTF-8"/>
+    <property name="java.library.path" value="/Users/samstanleya/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="UTF-8"/>
+    <property name="java.vendor" value="Homebrew"/>
+    <property name="java.vm.version" value="21.0.11"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
+    <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="java.class.version" value="65.0"/>
+  </properties>
+  <testcase name="testLongMessage" classname="com.campuschat.ChatServiceTest" time="0.038"/>
+  <testcase name="testTooShortUsername" classname="com.campuschat.ChatServiceTest" time="0.001"/>
+  <testcase name="testUserLifecycle" classname="com.campuschat.ChatServiceTest" time="0.002">
+    <system-out><![CDATA[13:25:23.789 [main] INFO com.campuschat.service.ChatService -- User connected: Priya (Session ID: session-100)
+13:25:23.790 [main] INFO com.campuschat.service.ChatService -- User disconnected: Priya (Session ID: session-100)
+]]></system-out>
+  </testcase>
+  <testcase name="testDuplicateUsername" classname="com.campuschat.ChatServiceTest" time="0.001">
+    <system-out><![CDATA[13:25:23.791 [main] INFO com.campuschat.service.ChatService -- User connected: Arun (Session ID: session-1)
+]]></system-out>
+  </testcase>
+  <testcase name="testUserReconnect" classname="com.campuschat.ChatServiceTest" time="0.001">
+    <system-out><![CDATA[13:25:23.792 [main] INFO com.campuschat.service.ChatService -- User connected: Sam (Session ID: session-old)
+13:25:23.792 [main] INFO com.campuschat.service.ChatService -- User connected: Sam (Session ID: session-new)
+]]></system-out>
+  </testcase>
+  <testcase name="testHistoryCapacity" classname="com.campuschat.ChatServiceTest" time="0.007">
+    <system-out><![CDATA[13:25:23.794 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User1: Message 1
+13:25:23.794 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User2: Message 2
+13:25:23.794 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User3: Message 3
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User4: Message 4
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User5: Message 5
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User6: Message 6
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User7: Message 7
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User8: Message 8
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User9: Message 9
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User10: Message 10
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User11: Message 11
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User12: Message 12
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User13: Message 13
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User14: Message 14
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User15: Message 15
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User16: Message 16
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User17: Message 17
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User18: Message 18
+13:25:23.795 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User19: Message 19
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User20: Message 20
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User21: Message 21
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User22: Message 22
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User23: Message 23
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User24: Message 24
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User25: Message 25
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User26: Message 26
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User27: Message 27
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User28: Message 28
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User29: Message 29
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User30: Message 30
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User31: Message 31
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User32: Message 32
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User33: Message 33
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User34: Message 34
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User35: Message 35
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User36: Message 36
+13:25:23.796 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User37: Message 37
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User38: Message 38
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User39: Message 39
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User40: Message 40
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User41: Message 41
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User42: Message 42
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User43: Message 43
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User44: Message 44
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User45: Message 45
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User46: Message 46
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User47: Message 47
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User48: Message 48
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User49: Message 49
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User50: Message 50
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User51: Message 51
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User52: Message 52
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User53: Message 53
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User54: Message 54
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User55: Message 55
+13:25:23.797 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User56: Message 56
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User57: Message 57
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User58: Message 58
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User59: Message 59
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User60: Message 60
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User61: Message 61
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User62: Message 62
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User63: Message 63
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User64: Message 64
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User65: Message 65
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User66: Message 66
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User67: Message 67
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User68: Message 68
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User69: Message 69
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User70: Message 70
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User71: Message 71
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User72: Message 72
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User73: Message 73
+13:25:23.798 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User74: Message 74
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User75: Message 75
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User76: Message 76
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User77: Message 77
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User78: Message 78
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User79: Message 79
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User80: Message 80
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User81: Message 81
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User82: Message 82
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User83: Message 83
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User84: Message 84
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User85: Message 85
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User86: Message 86
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User87: Message 87
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User88: Message 88
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User89: Message 89
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User90: Message 90
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User91: Message 91
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User92: Message 92
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User93: Message 93
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User94: Message 94
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User95: Message 95
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User96: Message 96
+13:25:23.799 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User97: Message 97
+13:25:23.800 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User98: Message 98
+13:25:23.800 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User99: Message 99
+13:25:23.800 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User100: Message 100
+13:25:23.800 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User101: Message 101
+13:25:23.800 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User102: Message 102
+13:25:23.800 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User103: Message 103
+13:25:23.800 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User104: Message 104
+13:25:23.800 [main] INFO com.campuschat.service.ChatService -- Message [CHAT] received from User105: Message 105
+]]></system-out>
+  </testcase>
+  <testcase name="testValidUsername" classname="com.campuschat.ChatServiceTest" time="0.0"/>
+  <testcase name="testHtmlSanitization" classname="com.campuschat.ChatServiceTest" time="0.001"/>
+  <testcase name="testInvalidCharacterUsername" classname="com.campuschat.ChatServiceTest" time="0.0"/>
+  <testcase name="testEmptyMessage" classname="com.campuschat.ChatServiceTest" time="0.001"/>
+  <testcase name="testTooLongUsername" classname="com.campuschat.ChatServiceTest" time="0.0"/>
+</testsuite>

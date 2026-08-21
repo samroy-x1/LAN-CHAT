@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusChat - Local Network Chat</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- ==================== 1. LANDING / JOIN SCREEN ==================== -->
+    <div id="join-screen" class="screen active">
+        <div class="join-card card">
+            <div class="brand-header">
+                <img src="assets/logo.svg" alt="CampusChat Logo" class="brand-logo">
+                <h1 class="brand-title">CAMPUSCHAT</h1>
+                <p class="brand-subtitle">Real-Time Local Network Chat</p>
+            </div>
+
+            <form id="join-form" class="join-form">
+                <div class="form-group">
+                    <label for="username-input">Enter Username</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username-input" placeholder="e.g. Sam, Arun_123" maxlength="20" required autocomplete="off">
+                    </div>
+                    <small class="form-hint">2–20 characters. Letters, numbers, spaces, _ and - allowed.</small>
+                </div>
+
+                <div id="join-error" class="error-box hidden"></div>
+
+                <button type="submit" id="join-btn" class="btn btn-primary btn-block">
+                    JOIN CHAT
+                </button>
+            </form>
+
+            <div class="lan-info-card">
+                <div class="lan-info-header">
+                    <span class="lan-dot pulse"></span>
+                    <span>LAN Server: <strong id="landing-server-ip">Detecting...</strong></span>
+                </div>
+            </div>
+
+            <div class="theme-toggle-wrapper">
+                <button type="button" class="theme-toggle-btn btn-icon" title="Toggle Light/Dark Theme">
+                    <span class="theme-icon">🌙</span> <span class="theme-text">Dark Mode</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 2. MAIN CHAT SCREEN ==================== -->
+    <div id="chat-screen" class="screen hidden">
+        <!-- Top App Bar -->
+        <header class="app-header">
+            <div class="header-left">
+                <button type="button" id="mobile-menu-btn" class="btn-icon mobile-only" title="Toggle Users List">
+                    👥
+                </button>
+                <img src="assets/logo.svg" alt="Logo" class="header-logo">
+                <div class="header-title-group">
+                    <h2 class="header-title">CampusChat</h2>
+                    <span class="server-badge" id="header-server-badge">http://...</span>
+                </div>
+            </div>
+
+            <div class="header-center">
+                <div class="status-indicator" id="connection-status">
+                    <span class="status-dot green"></span>
+                    <span class="status-text">Connected</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <button type="button" id="online-users-badge" class="btn btn-secondary online-count-btn">
+                    🟢 <span id="online-count">1</span> Online
+                </button>
+                <button type="button" id="network-info-btn" class="btn-icon" title="Server Info & QR Code">
+                    📡
+                </button>
+                <button type="button" id="sound-toggle-btn" class="btn-icon" title="Toggle Sound">
+                    🔊
+                </button>
+                <button type="button" class="theme-toggle-btn btn-icon" title="Toggle Light/Dark Theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button type="button" id="leave-btn" class="btn btn-danger btn-sm">
+                    Leave Chat
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Layout Split -->
+        <div class="app-body">
+            <!-- Sidebar: Online Users -->
+            <aside id="users-sidebar" class="users-sidebar">
+                <div class="sidebar-header">
+                    <h3>ONLINE USERS — <span id="sidebar-users-count">1</span></h3>
+                    <button type="button" id="close-sidebar-btn" class="btn-icon mobile-only">&times;</button>
+                </div>
+                <div class="users-list-container">
+                    <ul id="users-list" class="users-list">
+                        <!-- Populated dynamically -->
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Backdrop for Mobile Sidebar -->
+            <div id="sidebar-backdrop" class="sidebar-backdrop mobile-only"></div>
+
+            <!-- Main Chat Area -->
+            <main class="chat-area">
+                <!-- Server Share Banner -->
+                <div class="server-banner">
+                    <div class="server-banner-info">
+                        <span class="banner-icon">🌐</span>
+                        <span>Invite devices on Wi-Fi: <strong id="banner-server-url">http://...</strong></span>
+                    </div>
+                    <button type="button" id="copy-address-btn" class="btn btn-sm btn-accent">
+                        📋 COPY SERVER ADDRESS
+                    </button>
+                </div>
+
+                <!-- Messages Feed -->
+                <div id="chat-messages" class="messages-container">
+                    <!-- Messages dynamically appended -->
+                </div>
+
+                <!-- Typing Indicator Bar -->
+                <div id="typing-indicator" class="typing-indicator hidden">
+                    <span class="typing-dots">
+                        <span>.</span><span>.</span><span>.</span>
+                    </span>
+                    <span id="typing-text">Someone is typing...</span>
+                </div>
+
+                <!-- Drag & Drop Overlay -->
+                <div id="dropzone-overlay" class="dropzone-overlay hidden">
+                    <div class="dropzone-box">
+                        <span class="dropzone-icon">📁</span>
+                        <p class="dropzone-title">Drop file to share on LAN</p>
+                        <small class="dropzone-sub">Max file size: 50MB</small>
+                    </div>
+                </div>
+
+                <!-- Input Footer -->
+                <footer class="chat-input-container">
+                    <!-- Upload Progress Container -->
+                    <div id="upload-progress-container" class="upload-progress-container hidden">
+                        <div class="upload-info">
+                            <span id="upload-file-name">Uploading file...</span>
+                            <span id="upload-percentage">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="upload-progress-bar" class="progress-bar-fill"></div>
+                        </div>
+                    </div>
+
+                    <form id="message-form" class="message-form">
+                        <div class="input-area-wrapper">
+                            <textarea id="message-input" placeholder="Type a message or drop/paste a file... (Enter to send, Shift+Enter for newline)" rows="1" maxlength="500"></textarea>
+                            <div class="input-actions">
+                                <div class="input-left-actions">
+                                    <input type="file" id="file-input" class="hidden">
+                                    <button type="button" id="attach-file-btn" class="btn-icon attach-btn" title="Share File or Photo (LAN)">
+                                        📎
+                                    </button>
+                                    <span id="char-counter" class="char-counter">0 / 500</span>
+                                </div>
+                                <button type="submit" id="send-btn" class="btn btn-primary send-btn">
+                                    SEND <span>➤</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- ==================== 3. IMAGE LIGHTBOX MODAL ==================== -->
+    <div id="lightbox-modal" class="modal-backdrop hidden">
+        <div class="lightbox-content">
+            <button type="button" id="close-lightbox-btn" class="lightbox-close">&times;</button>
+            <img id="lightbox-img" src="" alt="Full view" class="lightbox-img">
+            <div class="lightbox-caption">
+                <span id="lightbox-filename">Image</span>
+                <a id="lightbox-download-link" href="#" download class="btn btn-sm btn-primary">⬇️ Download</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 3. NETWORK INFO & QR CODE MODAL ==================== -->
+    <div id="qr-modal" class="modal-backdrop hidden">
+        <div class="modal-card card">
+            <div class="modal-header">
+                <h3>Server & LAN Connection</h3>
+                <button type="button" id="close-modal-btn" class="btn-icon">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Other users on the same Wi-Fi can scan this QR code or type the server URL into their browser.</p>
+                <div class="qr-container">
+                    <img id="modal-qr-img" src="/api/qr" alt="LAN QR Code" class="qr-code-img">
+                </div>
+                <div class="server-details-list">
+                    <div class="detail-row">
+                        <span>Server Local IP:</span>
+                        <strong id="modal-ip">192.168.x.x</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>Port:</span>
+                        <strong id="modal-port">8080</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>Full URL:</span>
+                        <strong id="modal-url">http://192.168.x.x:8080</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>Status:</span>
+                        <span class="status-pill green">🟢 Online</span>
+                    </div>
+                </div>
+
+                <div class="mobile-troubleshoot-box">
+                    <h4>📱 Cannot connect from mobile?</h4>
+                    <ul>
+                        <li><strong>Same Wi-Fi Network:</strong> Ensure your phone is connected to the <em>same Wi-Fi network</em> as this laptop (not Mobile Data 4G/5G).</li>
+                        <li><strong>Hotspot Workaround:</strong> If your Wi-Fi blocks device-to-device traffic (AP Isolation / Public Wi-Fi), turn on your phone's <strong>Hotspot</strong>, connect this laptop to it, and scan/use the updated URL!</li>
+                        <li><strong>Firewall:</strong> Allow incoming connections on port 8080 in macOS Firewall.</li>
+                        <li><strong>VPN:</strong> Disconnect any active VPN on your laptop or phone.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="modal-copy-btn" class="btn btn-primary btn-block">
+                    📋 COPY SERVER ADDRESS
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Dependencies -->
+    <script src="js/sockjs.min.js"></script>
+    <script src="js/stomp.min.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/websocket.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
