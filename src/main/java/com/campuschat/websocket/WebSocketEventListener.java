@@ -6,7 +6,6 @@ import com.campuschat.service.ChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
@@ -42,10 +41,11 @@ public class WebSocketEventListener {
             leaveMessage.setMessage(disconnectedUser.getUsername() + " left the chat");
             messagingTemplate.convertAndSend("/topic/public", leaveMessage);
 
-            // Broadcast updated users list
+            // Broadcast updated users and channels list
             ChatMessage usersUpdateMsg = new ChatMessage();
             usersUpdateMsg.setType(ChatMessage.MessageType.USERS_UPDATE);
             usersUpdateMsg.setOnlineUsers(chatService.getOnlineUsers());
+            usersUpdateMsg.setChannels(chatService.getAllChannels());
             messagingTemplate.convertAndSend("/topic/public", usersUpdateMsg);
         }
     }

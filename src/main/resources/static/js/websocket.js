@@ -10,6 +10,7 @@ const WSController = {
     reconnectTimer: null,
     currentUsername: null,
     callbacks: {},
+    channelSubscriptions: {},
 
     connect(username, callbacks) {
         this.currentUsername = username;
@@ -17,7 +18,6 @@ const WSController = {
 
         UI.updateConnectionStatus('CONNECTING');
 
-        // Create SockJS connection or fallback to raw WebSocket
         let socket;
         if (typeof SockJS !== 'undefined') {
             socket = new SockJS('/ws');
@@ -27,9 +27,10 @@ const WSController = {
         }
 
         this.stompClient = Stomp.over(socket);
+        this.stompClient.debug = () => {}; // Disable noisy debug logs in console
 
         this.stompClient.connect(
-            {}, 
+            {},
             (frame) => this.onConnected(frame),
             (error) => this.onError(error)
         );
@@ -48,46 +49,79 @@ const WSController = {
             this.callbacks.onConnectSuccess();
         }
 
-        // Subscribe to public chat topic
+        // 1. Subscribe to public topic (System alerts, user updates, channel creations)
         this.stompClient.subscribe('/topic/public', (payload) => {
             try {
                 const messageObj = JSON.parse(payload.body);
                 this.handleIncomingMessage(messageObj);
             } catch (e) {
-                console.error("Error parsing incoming message:", e);
+                console.error("Error parsing public message:", e);
             }
         });
 
-        // Subscribe to private user queues (for history and errors)
+        // 2. Subscribe to private user queue (1-on-1 Direct Messages, DM reactions, DM typing)
+        this.stompClient.subscribe('/user/queue/messages', (payload) => {
+            try {
+                const messageObj = JSON.parse(payload.body);
+                this.handleIncomingMessage(messageObj);
+            } catch (e) {
+                console.error("Error parsing user private message:", e);
+            }
+        });
+
+        // 3. Subscribe to history response queue
         this.stompClient.subscribe('/user/queue/history', (payload) => {
             try {
                 const messageObj = JSON.parse(payload.body);
                 this.handleIncomingMessage(messageObj);
             } catch (e) {
-                console.error("Error parsing user history message:", e);
+                console.error("Error parsing history message:", e);
             }
         });
 
+        // 4. Subscribe to error queue
         this.stompClient.subscribe('/user/queue/errors', (payload) => {
             try {
                 const messageObj = JSON.parse(payload.body);
                 this.handleIncomingMessage(messageObj);
             } catch (e) {
-                console.error("Error parsing user error message:", e);
+                console.error("Error parsing error message:", e);
             }
         });
 
-        // Register user with server
+        // 5. Register user with server
         this.stompClient.send('/app/chat.addUser', {}, JSON.stringify({
             sender: this.currentUsername,
             type: 'JOIN'
         }));
     },
 
+    subscribeToChannel(channelId) {
+        if (!this.stompClient || !this.connected || !channelId) return;
+        const cleanId = channelId.toLowerCase().trim();
+        if (this.channelSubscriptions[cleanId]) return;
+
+        const sub = this.stompClient.subscribe(`/topic/channel/${cleanId}`, (payload) => {
+            try {
+                const msg = JSON.parse(payload.body);
+                this.handleIncomingMessage(msg);
+            } catch (e) {
+                console.error(`Error parsing channel message for #${cleanId}:`, e);
+            }
+        });
+
+        this.channelSubscriptions[cleanId] = sub;
+    },
+
+    subscribeToAllChannels(channelsList) {
+        if (!channelsList || !Array.isArray(channelsList)) return;
+        channelsList.forEach(ch => this.subscribeToChannel(ch.id));
+    },
+
     onError(error) {
         this.connected = false;
         UI.updateConnectionStatus('DISCONNECTED');
-        UI.showToast('Connection lost. Attempting auto-reconnect...', 'error');
+        UI.showToast('Connection lost. Reconnecting to LAN server...', 'error');
 
         if (this.callbacks.onConnectionLost) {
             this.callbacks.onConnectionLost();
@@ -100,36 +134,104 @@ const WSController = {
         if (this.reconnectTimer || !this.currentUsername) return;
 
         this.reconnectAttempts++;
-        // Exponential backoff: 3s, 6s, 12s, 24s... max 30s
         const delay = Math.min(3000 * Math.pow(1.5, this.reconnectAttempts - 1), this.maxReconnectDelay);
-
-        console.log(`Scheduling reconnect attempt #${this.reconnectAttempts} in ${Math.round(delay/1000)}s...`);
 
         this.reconnectTimer = setTimeout(() => {
             this.reconnectTimer = null;
             if (this.currentUsername) {
+                this.channelSubscriptions = {};
                 this.connect(this.currentUsername, this.callbacks);
             }
         }, delay);
     },
 
-    sendMessage(messageText) {
+    // ==================== Outgoing Actions ====================
+
+    sendChannelMessage(channelId, messageText) {
         if (!this.connected || !this.stompClient) {
-            UI.showToast('Cannot send message. Disconnected from server.', 'error');
+            UI.showToast('Cannot send message. Disconnected.', 'error');
             return false;
         }
 
         const chatMessage = {
             sender: this.currentUsername,
+            channelId: channelId || 'general',
             message: messageText,
-            type: 'CHAT'
+            type: 'CHANNEL_CHAT'
         };
 
-        this.stompClient.send('/app/chat.sendMessage', {}, JSON.stringify(chatMessage));
+        this.stompClient.send('/app/chat.sendChannelMessage', {}, JSON.stringify(chatMessage));
         return true;
     },
 
-    sendTyping(isTyping) {
+    sendPrivateMessage(recipient, messageText) {
+        if (!this.connected || !this.stompClient) {
+            UI.showToast('Cannot send message. Disconnected.', 'error');
+            return false;
+        }
+
+        const chatMessage = {
+            sender: this.currentUsername,
+            recipient: recipient,
+            message: messageText,
+            type: 'PRIVATE_CHAT'
+        };
+
+        this.stompClient.send('/app/chat.sendPrivateMessage', {}, JSON.stringify(chatMessage));
+        return true;
+    },
+
+    createChannel(name, description) {
+        if (!this.connected || !this.stompClient) return false;
+
+        const chatMessage = {
+            sender: this.currentUsername,
+            message: name,
+            channelId: description || '',
+            type: 'CREATE_CHANNEL'
+        };
+
+        this.stompClient.send('/app/chat.createChannel', {}, JSON.stringify(chatMessage));
+        return true;
+    },
+
+    requestHistory(chatType, targetId) {
+        if (!this.connected || !this.stompClient) return;
+
+        const req = {
+            sender: this.currentUsername,
+            type: 'HISTORY'
+        };
+
+        if (chatType === 'DM') {
+            req.recipient = targetId;
+        } else {
+            req.channelId = targetId || 'general';
+        }
+
+        this.stompClient.send('/app/chat.getHistory', {}, JSON.stringify(req));
+    },
+
+    sendReaction(messageId, emoji, chatType, targetId) {
+        if (!this.connected || !this.stompClient) return;
+
+        const req = {
+            sender: this.currentUsername,
+            targetMessageId: messageId,
+            reactionEmoji: emoji,
+            type: 'REACTION'
+        };
+
+        if (chatType === 'DM') {
+            req.recipient = targetId;
+        } else {
+            req.channelId = targetId || 'general';
+        }
+
+        this.stompClient.send('/app/chat.reactMessage', {}, JSON.stringify(req));
+    },
+
+    sendTyping(isTyping, chatType, targetId) {
         if (!this.connected || !this.stompClient) return;
 
         const typingMessage = {
@@ -138,65 +240,22 @@ const WSController = {
             type: 'TYPING'
         };
 
+        if (chatType === 'DM') {
+            typingMessage.recipient = targetId;
+        } else {
+            typingMessage.channelId = targetId || 'general';
+        }
+
         this.stompClient.send('/app/chat.typing', {}, JSON.stringify(typingMessage));
     },
+
+    // ==================== Incoming Dispatcher ====================
 
     handleIncomingMessage(msg) {
         if (!msg || !msg.type) return;
 
-        switch (msg.type) {
-            case 'CHAT':
-            case 'FILE':
-                UI.appendChatMessage(msg, this.currentUsername);
-                break;
-
-            case 'JOIN':
-                UI.appendSystemMessage(`${msg.sender} joined the chat`);
-                UI.showToast(`${msg.sender} joined`, 'info');
-                break;
-
-            case 'LEAVE':
-                UI.appendSystemMessage(`${msg.sender} left the chat`);
-                UI.showToast(`${msg.sender} left`, 'info');
-                break;
-
-            case 'USERS_UPDATE':
-                if (msg.onlineUsers) {
-                    UI.updateOnlineUsersList(msg.onlineUsers, this.currentUsername);
-                }
-                break;
-
-            case 'HISTORY':
-                if (msg.history && Array.isArray(msg.history)) {
-                    document.getElementById('chat-messages').innerHTML = ''; // clear history container
-                    msg.history.forEach(item => UI.appendChatMessage(item, this.currentUsername));
-                }
-                if (msg.onlineUsers) {
-                    UI.updateOnlineUsersList(msg.onlineUsers, this.currentUsername);
-                }
-                break;
-
-            case 'TYPING':
-                if (this.callbacks.onTypingReceived) {
-                    this.callbacks.onTypingReceived(msg);
-                }
-                break;
-
-            case 'ERROR':
-                UI.showToast(msg.message || 'An error occurred.', 'error');
-                if (msg.message && msg.message.includes('Username')) {
-                    this.disconnect();
-                    UI.showScreen('join-screen');
-                    const errorBox = document.getElementById('join-error');
-                    if (errorBox) {
-                        errorBox.textContent = msg.message;
-                        errorBox.classList.remove('hidden');
-                    }
-                }
-                break;
-
-            default:
-                break;
+        if (this.callbacks.onMessageReceived) {
+            this.callbacks.onMessageReceived(msg);
         }
     },
 
@@ -209,8 +268,9 @@ const WSController = {
         if (this.stompClient && this.connected) {
             try {
                 this.stompClient.disconnect();
-            } catch(e){}
+            } catch (e) {}
         }
+        this.channelSubscriptions = {};
         this.connected = false;
         UI.updateConnectionStatus('DISCONNECTED');
     }

@@ -2,8 +2,8 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CampusChat - Local Network Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+    <title>CampusChat - Local Network Chat & Collaboration</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,7 +20,7 @@
             <div class="brand-header">
                 <img src="assets/logo.svg" alt="CampusChat Logo" class="brand-logo">
                 <h1 class="brand-title">CAMPUSCHAT</h1>
-                <p class="brand-subtitle">Real-Time Local Network Chat</p>
+                <p class="brand-subtitle">Real-Time Local Network Chat & Channels</p>
             </div>
 
             <form id="join-form" class="join-form">
@@ -56,85 +56,114 @@
 
     <!-- ==================== 2. MAIN CHAT SCREEN ==================== -->
     <div id="chat-screen" class="screen hidden">
-        <!-- Top App Bar -->
-        <header class="app-header">
-            <div class="header-left">
-                <button type="button" id="mobile-menu-btn" class="btn-icon mobile-only" title="Toggle Users List">
-                    👥
-                </button>
-                <img src="assets/logo.svg" alt="Logo" class="header-logo">
-                <div class="header-title-group">
-                    <h2 class="header-title">CampusChat</h2>
-                    <span class="server-badge" id="header-server-badge">http://...</span>
-                </div>
-            </div>
-
-            <div class="header-center">
-                <div class="status-indicator" id="connection-status">
-                    <span class="status-dot green"></span>
-                    <span class="status-text">Connected</span>
-                </div>
-            </div>
-
-            <div class="header-right">
-                <button type="button" id="online-users-badge" class="btn btn-secondary online-count-btn">
-                    🟢 <span id="online-count">1</span> Online
-                </button>
-                <button type="button" id="network-info-btn" class="btn-icon" title="Server Info & QR Code">
-                    📡
-                </button>
-                <button type="button" id="sound-toggle-btn" class="btn-icon" title="Toggle Sound">
-                    🔊
-                </button>
-                <button type="button" class="theme-toggle-btn btn-icon" title="Toggle Light/Dark Theme">
-                    <span class="theme-icon">🌙</span>
-                </button>
-                <button type="button" id="leave-btn" class="btn btn-danger btn-sm">
-                    Leave Chat
-                </button>
-            </div>
-        </header>
-
         <!-- Main Layout Split -->
-        <div class="app-body">
-            <!-- Sidebar: Online Users -->
-            <aside id="users-sidebar" class="users-sidebar">
-                <div class="sidebar-header">
-                    <h3>ONLINE USERS — <span id="sidebar-users-count">1</span></h3>
-                    <button type="button" id="close-sidebar-btn" class="btn-icon mobile-only">&times;</button>
+        <div class="app-layout">
+            
+            <!-- SIDEBAR: Channels & Direct Messages -->
+            <aside id="chat-sidebar" class="chat-sidebar">
+                <!-- Sidebar Top User Info -->
+                <div class="sidebar-user-card">
+                    <div class="user-avatar-badge" id="my-avatar">U</div>
+                    <div class="user-profile-meta">
+                        <span class="my-username" id="sidebar-my-username">User</span>
+                        <span class="my-status"><span class="status-dot green"></span> Online</span>
+                    </div>
+                    <button type="button" id="close-sidebar-btn" class="btn-icon mobile-only" title="Close Sidebar">&times;</button>
                 </div>
-                <div class="users-list-container">
-                    <ul id="users-list" class="users-list">
-                        <!-- Populated dynamically -->
-                    </ul>
+
+                <div class="sidebar-scrollable">
+                    <!-- Section A: CHANNELS -->
+                    <div class="sidebar-section">
+                        <div class="section-header">
+                            <span class="section-title">💬 CHANNELS</span>
+                            <button type="button" id="open-create-channel-btn" class="section-action-btn" title="Create New Channel">+</button>
+                        </div>
+                        <ul id="channels-list" class="nav-list">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+
+                    <!-- Section B: DIRECT MESSAGES (1-on-1) -->
+                    <div class="sidebar-section">
+                        <div class="section-header">
+                            <span class="section-title">👤 DIRECT MESSAGES</span>
+                            <span class="online-pill" id="sidebar-online-pill">0 Online</span>
+                        </div>
+                        <ul id="direct-users-list" class="nav-list">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sidebar Footer Utilities -->
+                <div class="sidebar-footer">
+                    <button type="button" id="network-info-btn" class="btn btn-sm btn-secondary sidebar-action-btn" title="Server Info & QR Code">
+                        📡 Server Info
+                    </button>
+                    <button type="button" id="leave-btn" class="btn btn-sm btn-danger sidebar-action-btn" title="Leave Chat">
+                        🚪 Leave
+                    </button>
                 </div>
             </aside>
 
-            <!-- Backdrop for Mobile Sidebar -->
+            <!-- Backdrop for Mobile Sidebar Drawer -->
             <div id="sidebar-backdrop" class="sidebar-backdrop mobile-only"></div>
 
-            <!-- Main Chat Area -->
-            <main class="chat-area">
+            <!-- MAIN CHAT AREA -->
+            <main class="chat-main-area">
+                <!-- Top Header for Active Conversation -->
+                <header class="chat-header">
+                    <div class="header-left">
+                        <button type="button" id="mobile-menu-btn" class="btn-icon mobile-only" title="Open Channels & DMs">
+                            ☰
+                        </button>
+                        <div class="active-chat-icon" id="active-chat-icon">#</div>
+                        <div class="active-chat-details">
+                            <div class="active-title-row">
+                                <h2 class="active-chat-title" id="active-chat-title">general</h2>
+                                <span class="active-type-pill" id="active-type-pill">Channel</span>
+                            </div>
+                            <p class="active-chat-desc" id="active-chat-desc">Public campus-wide discussions and announcements.</p>
+                        </div>
+                    </div>
+
+                    <div class="header-right">
+                        <div class="status-indicator" id="connection-status">
+                            <span class="status-dot green"></span>
+                            <span class="status-text">Connected</span>
+                        </div>
+                        <button type="button" id="sound-toggle-btn" class="btn-icon" title="Toggle Notification Sound">
+                            🔊
+                        </button>
+                        <button type="button" class="theme-toggle-btn btn-icon" title="Toggle Light/Dark Theme">
+                            <span class="theme-icon">🌙</span>
+                        </button>
+                    </div>
+                </header>
+
                 <!-- Server Share Banner -->
-                <div class="server-banner">
+                <div id="server-banner" class="server-banner">
                     <div class="server-banner-info">
                         <span class="banner-icon">🌐</span>
                         <span>Invite devices on Wi-Fi: <strong id="banner-server-url">http://...</strong></span>
                     </div>
-                    <button type="button" id="copy-address-btn" class="btn btn-sm btn-accent">
-                        📋 COPY SERVER ADDRESS
-                    </button>
+                    <div class="server-banner-actions">
+                        <button type="button" id="copy-address-btn" class="btn btn-sm btn-accent">
+                            📋 <span class="copy-btn-text">COPY SERVER ADDRESS</span>
+                        </button>
+                        <button type="button" id="dismiss-banner-btn" class="banner-close-btn" title="Dismiss Banner">&times;</button>
+                    </div>
                 </div>
 
                 <!-- Messages Feed -->
                 <div id="chat-messages" class="messages-container">
-                    <!-- Messages dynamically appended -->
+                    <!-- Messages dynamically rendered -->
                 </div>
 
                 <!-- Typing Indicator Bar -->
                 <div id="typing-indicator" class="typing-indicator hidden">
                     <span class="typing-dots">
-                        <span>.</span><span>.</span><span>.</span>
+                        <span></span><span></span><span></span>
                     </span>
                     <span id="typing-text">Someone is typing...</span>
                 </div>
@@ -144,7 +173,7 @@
                     <div class="dropzone-box">
                         <span class="dropzone-icon">📁</span>
                         <p class="dropzone-title">Drop file to share on LAN</p>
-                        <small class="dropzone-sub">Max file size: 50MB</small>
+                        <small class="dropzone-sub">Max file size: 500MB</small>
                     </div>
                 </div>
 
@@ -161,14 +190,36 @@
                         </div>
                     </div>
 
+                    <!-- Emoji Picker Popover Container -->
+                    <div id="emoji-picker-popover" class="emoji-picker-popover hidden">
+                        <div class="emoji-picker-header">
+                            <input type="text" id="emoji-search-input" placeholder="Search emojis (e.g. smile, heart, fire)..." autocomplete="off">
+                        </div>
+                        <div class="emoji-category-tabs" id="emoji-category-tabs">
+                            <button type="button" class="emoji-tab-btn active" data-category="smileys">😃</button>
+                            <button type="button" class="emoji-tab-btn" data-category="gestures">👍</button>
+                            <button type="button" class="emoji-tab-btn" data-category="campus">🎓</button>
+                            <button type="button" class="emoji-tab-btn" data-category="hearts">❤️</button>
+                            <button type="button" class="emoji-tab-btn" data-category="fun">🎉</button>
+                            <button type="button" class="emoji-tab-btn" data-category="food">🍕</button>
+                        </div>
+                        <div class="emoji-grid-container" id="emoji-grid-container">
+                            <!-- Emojis populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Input Form -->
                     <form id="message-form" class="message-form">
                         <div class="input-area-wrapper">
-                            <textarea id="message-input" placeholder="Type a message or drop/paste a file... (Enter to send, Shift+Enter for newline)" rows="1" maxlength="500"></textarea>
+                            <textarea id="message-input" placeholder="Message #general..." rows="1" maxlength="500" enterkeyhint="send" autocomplete="off"></textarea>
                             <div class="input-actions">
                                 <div class="input-left-actions">
                                     <input type="file" id="file-input" class="hidden">
-                                    <button type="button" id="attach-file-btn" class="btn-icon attach-btn" title="Share File or Photo (LAN)">
+                                    <button type="button" id="attach-file-btn" class="btn-icon attach-btn" title="Share File on LAN">
                                         📎
+                                    </button>
+                                    <button type="button" id="emoji-picker-toggle-btn" class="btn-icon emoji-btn" title="Insert Emoji">
+                                        😀
                                     </button>
                                     <span id="char-counter" class="char-counter">0 / 500</span>
                                 </div>
@@ -183,7 +234,36 @@
         </div>
     </div>
 
-    <!-- ==================== 3. IMAGE LIGHTBOX MODAL ==================== -->
+    <!-- ==================== 3. CREATE CHANNEL MODAL ==================== -->
+    <div id="create-channel-modal" class="modal-backdrop hidden">
+        <div class="modal-card card">
+            <div class="modal-header">
+                <h3>Create New Channel</h3>
+                <button type="button" id="close-channel-modal-btn" class="btn-icon">&times;</button>
+            </div>
+            <form id="create-channel-form" class="modal-body">
+                <div class="form-group">
+                    <label for="channel-name-input">Channel Name</label>
+                    <div class="input-wrapper">
+                        <span class="input-prefix">#</span>
+                        <input type="text" id="channel-name-input" placeholder="e.g. hackathon-2026, gaming, projects" maxlength="30" required autocomplete="off">
+                    </div>
+                    <small class="form-hint">2–30 characters. Letters, numbers, spaces, _ and - allowed.</small>
+                </div>
+                <div class="form-group">
+                    <label for="channel-desc-input">Channel Topic / Description (Optional)</label>
+                    <input type="text" id="channel-desc-input" placeholder="What is this channel about?" maxlength="120" autocomplete="off">
+                </div>
+                <div id="create-channel-error" class="error-box hidden"></div>
+                <div class="modal-footer">
+                    <button type="button" id="cancel-channel-btn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Channel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== 4. IMAGE LIGHTBOX MODAL ==================== -->
     <div id="lightbox-modal" class="modal-backdrop hidden">
         <div class="lightbox-content">
             <button type="button" id="close-lightbox-btn" class="lightbox-close">&times;</button>
@@ -195,7 +275,7 @@
         </div>
     </div>
 
-    <!-- ==================== 3. NETWORK INFO & QR CODE MODAL ==================== -->
+    <!-- ==================== 5. NETWORK INFO & QR CODE MODAL ==================== -->
     <div id="qr-modal" class="modal-backdrop hidden">
         <div class="modal-card card">
             <div class="modal-header">
@@ -230,9 +310,8 @@
                     <h4>📱 Cannot connect from mobile?</h4>
                     <ul>
                         <li><strong>Same Wi-Fi Network:</strong> Ensure your phone is connected to the <em>same Wi-Fi network</em> as this laptop (not Mobile Data 4G/5G).</li>
-                        <li><strong>Hotspot Workaround:</strong> If your Wi-Fi blocks device-to-device traffic (AP Isolation / Public Wi-Fi), turn on your phone's <strong>Hotspot</strong>, connect this laptop to it, and scan/use the updated URL!</li>
-                        <li><strong>Firewall:</strong> Allow incoming connections on port 8080 in macOS Firewall.</li>
-                        <li><strong>VPN:</strong> Disconnect any active VPN on your laptop or phone.</li>
+                        <li><strong>Hotspot Workaround:</strong> If your Wi-Fi blocks device-to-device traffic (AP Isolation), turn on your phone's <strong>Hotspot</strong>, connect this laptop, and scan the QR code!</li>
+                        <li><strong>Firewall:</strong> Allow incoming connections on port 8080 in Firewall settings.</li>
                     </ul>
                 </div>
             </div>

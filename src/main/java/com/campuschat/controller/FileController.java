@@ -11,11 +11,14 @@ import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/files")
@@ -36,22 +39,42 @@ public class FileController {
 
     @PostMapping("/upload")
     public ResponseEntity<FileMetadata> uploadFile(@RequestParam("file") MultipartFile file,
-                                                   @RequestParam("sender") String sender) {
+                                                   @RequestParam("sender") String sender,
+                                                   @RequestParam(value = "channelId", required = false) String channelId,
+                                                   @RequestParam(value = "recipient", required = false) String recipient) {
         String sanitizedSender = chatService.sanitizeHtml(sender != null ? sender.trim() : "Anonymous");
         FileMetadata metadata = fileStorageService.storeFile(file, sanitizedSender);
 
-        // Create ChatMessage of type FILE and broadcast to websocket channel
         ChatMessage fileMessage = new ChatMessage();
         fileMessage.setType(ChatMessage.MessageType.FILE);
         fileMessage.setSender(sanitizedSender);
         fileMessage.setMessage("Shared a file: " + metadata.getFileName());
         fileMessage.setFileMetadata(metadata);
 
-        // Process & store in history
-        chatService.processAndAddMessage(fileMessage);
+        if (recipient != null && !recipient.isBlank()) {
+            // Private 1-on-1 File Transfer
+            fileMessage.setRecipient(recipient.trim());
+            chatService.processPrivateMessage(fileMessage);
 
-        // Broadcast to all WebSocket clients on public topic
-        messagingTemplate.convertAndSend("/topic/public", fileMessage);
+            Set<String> recipientSessions = chatService.getSessionIdsForUser(recipient.trim());
+            for (String sId : recipientSessions) {
+                sendToSession(sId, "/queue/messages", fileMessage);
+            }
+            Set<String> senderSessions = chatService.getSessionIdsForUser(sanitizedSender);
+            for (String sId : senderSessions) {
+                sendToSession(sId, "/queue/messages", fileMessage);
+            }
+        } else {
+            // Channel File Transfer
+            String targetChannel = (channelId != null && !channelId.isBlank()) ? channelId.trim().toLowerCase() : "general";
+            fileMessage.setChannelId(targetChannel);
+            chatService.processChannelMessage(fileMessage);
+
+            messagingTemplate.convertAndSend("/topic/channel/" + targetChannel, fileMessage);
+            if (!"general".equalsIgnoreCase(targetChannel)) {
+                messagingTemplate.convertAndSend("/topic/public", fileMessage);
+            }
+        }
 
         return ResponseEntity.ok(metadata);
     }
@@ -86,5 +109,13 @@ public class FileController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
                 .body(resource);
+    }
+
+    private void sendToSession(String sessionId, String destination, Object payload) {
+        if (sessionId == null) return;
+        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+        headerAccessor.setSessionId(sessionId);
+        headerAccessor.setLeaveMutable(true);
+        messagingTemplate.convertAndSendToUser(sessionId, destination, payload, headerAccessor.getMessageHeaders());
     }
 }

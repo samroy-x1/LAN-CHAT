@@ -12,5 +12,6 @@ com/campuschat/model/ChatMessage.class
 com/campuschat/service/NetworkService.class
 com/campuschat/config/WebSocketConfig.class
 com/campuschat/service/FileStorageService.class
+com/campuschat/model/Channel.class
 com/campuschat/exception/GlobalExceptionHandler.class
 com/campuschat/model/User.class

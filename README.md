@@ -7,18 +7,20 @@ CampusChat is a real-time, zero-internet local area network (LAN) chat web appli
 ## 🌟 Key Features
 
 - 🌐 **Zero Internet Dependency**: Operates entirely within your local network (LAN / Wi-Fi).
-- ⚡ **Real-Time Messaging**: Powered by WebSocket STOMP subprotocol for instantaneous delivery.
-- 📱 **Mobile & Desktop Responsive**: Gaming-inspired modern dark mode default with collapsible mobile user drawer.
-- 🟢 **Live Online Users**: Dynamic list of active connected users with status indicators.
-- 🔔 **System Alerts**: Instant visual notifications when users join or leave the chat.
-- ✍️ **Typing Indicator**: Real-time debounce typing notifications ("Arun is typing...").
-- 🔒 **Built-in Security & XSS Sanitization**: Case-insensitive duplicate username protection, 2–20 character limits, 500-character message capping, and strict server-side HTML escaping.
-- 📡 **Local IP Auto-Detection & QR Code**: Auto-detects server LAN IP (`192.168.x.x` or `10.x.x.x`) and generates a local QR Code on the server for instant mobile scanning.
-- 📋 **One-Click Link Copy**: Built-in clipboard utility with visual "Copied!" feedback.
-- 📜 **In-Memory Message History**: Retains the latest 100 messages in memory for new joiners.
-- 🔄 **Automatic Reconnection**: Intelligent exponential backoff reconnection if Wi-Fi drops.
+- 💬 **Topic Channels**: Default channels (`#general`, `#study-group`, `#code-snippets`, `#random`) plus dynamic custom channel creation.
+- 👤 **1-on-1 Direct Messaging (DMs)**: Private, point-to-point messaging between peers with isolated conversation history and private typing alerts.
+- ⚡ **Real-Time STOMP Messaging**: Instantaneous delivery powered by Spring WebSocket STOMP broker.
+- 😀 **Interactive Emoji Picker**: Categorized emoji popover with instant search (Smileys, Gestures, Campus/Tech, Hearts, Fun, Food).
+- 🔥 **Live Message Reactions**: Quick emoji reaction bar (👍, ❤️, 😂, 🔥, 🚀) and toggleable animated reaction pill counters on message bubbles.
+- 🔴 **Unread Notification Badges**: Real-time unread badge counters on both channels and private DM peers.
+- 📁 **High-Speed LAN File Sharing**: Scoped drag-and-drop file transfers (up to 500MB) for channels and private DMs with inline media previews.
+- 🟢 **Live Online Presence**: Dynamic online peer list with status indicators and self-identification.
+- ✍️ **Scoped Typing Indicators**: Real-time debounce typing notifications scoped to the active channel or private recipient.
+- 📡 **Local IP Auto-Detection & QR Code**: Auto-detects server LAN IP (`192.168.x.x` or `10.x.x.x`) and generates a server-side QR Code for instant mobile access.
+- 📜 **Isolated In-Memory History**: Retains the latest 100 messages segregated per channel and per 1-on-1 conversation.
 - 🔊 **Synthesized Notification Sounds**: Pure Web Audio API synthesized chimes with mute/unmute control.
 - 🌙 **Dark / Light Theme Switcher**: Toggle theme with preference saved in `localStorage`.
+- 🔒 **Security & XSS Sanitization**: Double-layer server & client HTML sanitization, duplicate username eviction, and input boundaries.
 
 ---
 
@@ -207,16 +209,19 @@ LAN CHAT_JAVA/
     │   │   │   └── WebSocketConfig.java     # STOMP & WebSocket Configuration
     │   │   ├── controller/
     │   │   │   ├── ChatController.java      # STOMP Messaging Handlers
+    │   │   │   ├── FileController.java      # File Upload, Download & Preview Endpoints
     │   │   │   └── ServerInfoController.java# REST APIs for Network Info & QR Code
     │   │   ├── exception/
     │   │   │   ├── ChatException.java       # Custom Business Exception
     │   │   │   └── GlobalExceptionHandler.java # REST & Controller Exception Handling
     │   │   ├── model/
     │   │   │   ├── ChatMessage.java         # Chat Message Data Model
+    │   │   │   ├── FileMetadata.java        # Uploaded File Metadata & Category Model
     │   │   │   ├── ServerInfo.java          # Network Server Information Model
     │   │   │   └── User.java                # User Model
     │   │   ├── service/
     │   │   │   ├── ChatService.java         # Core Business Logic & State Management
+    │   │   │   ├── FileStorageService.java  # Local Disk File Storage & Categorization
     │   │   │   └── NetworkService.java      # Local Network IP & ZXing QR Generator
     │   │   └── websocket/
     │   │       └── WebSocketEventListener.java # Disconnect Listener
@@ -252,13 +257,16 @@ LAN CHAT_JAVA/
 
 ## 🔮 Future Roadmap (Version 2+)
 
-*These features are planned for future versions:*
-- [ ] Direct Private Messaging between users
-- [ ] Custom Group Chat channels
-- [ ] Local File & Photo sharing over LAN
+*Features implemented and roadmap status:*
+- [x] Local File & Media sharing over LAN (up to 500MB with live preview & progress tracking)
+- [x] Direct Private Messaging (1-on-1 DMs) between connected users
+- [x] Topic Channels (`#general`, `#study-group`, `#code-snippets`, `#random`) + Custom Channel Creation
+- [x] Interactive Emoji Picker (Categorized & Searchable)
+- [x] Message Emoji Reactions (Quick Reaction Bar & Animated Counter Pills)
+- [x] Unread Notification Badges for Channels and DMs
 - [ ] Database Persistence (MySQL / PostgreSQL / H2 integration)
 - [ ] End-to-End Encrypted (E2EE) messaging options
-- [ ] User avatars & custom profile statuses
+- [ ] Collaborative Whiteboard & Screen Sharing
 
 ---
 

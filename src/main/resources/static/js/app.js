@@ -5,6 +5,15 @@
 const App = {
     serverInfo: null,
     currentUsername: '',
+    channels: [],
+    onlineUsers: [],
+    activeChat: {
+        type: 'CHANNEL', // 'CHANNEL' or 'DM'
+        id: 'general',
+        channel: { id: 'general', name: 'general', description: 'Public campus-wide discussions and announcements.' },
+        targetUser: null
+    },
+    unreadCounts: {},
     typingTimeout: null,
     remoteTypingTimers: {},
 
@@ -12,9 +21,27 @@ const App = {
         this.fetchServerInfo();
         this.bindEvents();
         this.loadSavedUsername();
+        this.initMobileViewport();
     },
 
-    // 1. Fetch Local Network Server Information from Backend REST API
+    initMobileViewport() {
+        if (window.visualViewport) {
+            const handleViewportChange = () => {
+                const chatScreen = document.getElementById('chat-screen');
+                if (chatScreen && !chatScreen.classList.contains('hidden')) {
+                    document.documentElement.style.setProperty('--visual-viewport-height', `${window.visualViewport.height}px`);
+                    const messagesContainer = document.getElementById('chat-messages');
+                    if (messagesContainer) {
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                }
+            };
+            window.visualViewport.addEventListener('resize', handleViewportChange);
+            window.visualViewport.addEventListener('scroll', handleViewportChange);
+        }
+    },
+
+    // 1. Fetch Server Info
     fetchServerInfo() {
         fetch('/api/info')
             .then(res => res.json())
@@ -32,14 +59,12 @@ const App = {
 
     updateServerInfoUI(info) {
         const landingIp = document.getElementById('landing-server-ip');
-        const headerBadge = document.getElementById('header-server-badge');
         const bannerUrl = document.getElementById('banner-server-url');
         const modalIp = document.getElementById('modal-ip');
         const modalPort = document.getElementById('modal-port');
         const modalUrl = document.getElementById('modal-url');
 
         if (landingIp) landingIp.textContent = info.serverUrl || info.ipAddress;
-        if (headerBadge) headerBadge.textContent = info.serverUrl;
         if (bannerUrl) bannerUrl.textContent = info.serverUrl;
         if (modalIp) modalIp.textContent = info.ipAddress;
         if (modalPort) modalPort.textContent = info.port;
@@ -75,44 +100,80 @@ const App = {
             msgForm.addEventListener('submit', (e) => this.handleSendMessage(e));
         }
 
+        // Create Channel Modal Controls
+        const openCreateChannelBtn = document.getElementById('open-create-channel-btn');
+        const closeChannelModalBtn = document.getElementById('close-channel-modal-btn');
+        const cancelChannelBtn = document.getElementById('cancel-channel-btn');
+        const createChannelModal = document.getElementById('create-channel-modal');
+        const createChannelForm = document.getElementById('create-channel-form');
+
+        const openChannelModal = () => {
+            if (createChannelModal) {
+                createChannelModal.classList.remove('hidden');
+                const nameInput = document.getElementById('channel-name-input');
+                if (nameInput) {
+                    nameInput.value = '';
+                    nameInput.focus();
+                }
+                const descInput = document.getElementById('channel-desc-input');
+                if (descInput) descInput.value = '';
+                const errBox = document.getElementById('create-channel-error');
+                if (errBox) errBox.classList.add('hidden');
+            }
+        };
+
+        const closeChannelModal = () => {
+            if (createChannelModal) createChannelModal.classList.add('hidden');
+        };
+
+        if (openCreateChannelBtn) openCreateChannelBtn.addEventListener('click', openChannelModal);
+        if (closeChannelModalBtn) closeChannelModalBtn.addEventListener('click', closeChannelModal);
+        if (cancelChannelBtn) cancelChannelBtn.addEventListener('click', closeChannelModal);
+        if (createChannelModal) {
+            createChannelModal.addEventListener('click', (e) => {
+                if (e.target === createChannelModal) closeChannelModal();
+            });
+        }
+        if (createChannelForm) {
+            createChannelForm.addEventListener('submit', (e) => this.handleCreateChannelSubmit(e));
+        }
+
         // Mobile Sidebar Drawer Controls
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const closeSidebarBtn = document.getElementById('close-sidebar-btn');
         const backdrop = document.getElementById('sidebar-backdrop');
-        const onlineCountBtn = document.getElementById('online-users-badge');
 
         const openSidebar = () => {
-            document.getElementById('users-sidebar').classList.add('open');
+            document.getElementById('chat-sidebar').classList.add('open');
             if (backdrop) backdrop.classList.add('active');
         };
         const closeSidebar = () => {
-            document.getElementById('users-sidebar').classList.remove('open');
+            document.getElementById('chat-sidebar').classList.remove('open');
             if (backdrop) backdrop.classList.remove('active');
         };
 
         if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openSidebar);
-        if (onlineCountBtn) onlineCountBtn.addEventListener('click', openSidebar);
         if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
         if (backdrop) backdrop.addEventListener('click', closeSidebar);
 
         // QR Modal Controls
         const networkInfoBtn = document.getElementById('network-info-btn');
         const closeModalBtn = document.getElementById('close-modal-btn');
-        const modalBackdrop = document.getElementById('qr-modal');
+        const qrModal = document.getElementById('qr-modal');
 
         if (networkInfoBtn) {
             networkInfoBtn.addEventListener('click', () => {
-                if (modalBackdrop) modalBackdrop.classList.remove('hidden');
+                if (qrModal) qrModal.classList.remove('hidden');
             });
         }
         if (closeModalBtn) {
             closeModalBtn.addEventListener('click', () => {
-                if (modalBackdrop) modalBackdrop.classList.add('hidden');
+                if (qrModal) qrModal.classList.add('hidden');
             });
         }
-        if (modalBackdrop) {
-            modalBackdrop.addEventListener('click', (e) => {
-                if (e.target === modalBackdrop) modalBackdrop.classList.add('hidden');
+        if (qrModal) {
+            qrModal.addEventListener('click', (e) => {
+                if (e.target === qrModal) qrModal.classList.add('hidden');
             });
         }
 
@@ -127,6 +188,15 @@ const App = {
 
         if (copyBannerBtn) copyBannerBtn.addEventListener('click', () => triggerCopy(copyBannerBtn));
         if (copyModalBtn) copyModalBtn.addEventListener('click', () => triggerCopy(copyModalBtn));
+
+        // Dismiss Banner
+        const dismissBannerBtn = document.getElementById('dismiss-banner-btn');
+        const serverBanner = document.getElementById('server-banner');
+        if (dismissBannerBtn && serverBanner) {
+            dismissBannerBtn.addEventListener('click', () => {
+                serverBanner.style.display = 'none';
+            });
+        }
 
         // Leave Chat Button
         const leaveBtn = document.getElementById('leave-btn');
@@ -159,7 +229,7 @@ const App = {
         }
 
         // Drag & Drop File Handling
-        const chatArea = document.querySelector('.chat-area');
+        const chatArea = document.querySelector('.chat-main-area');
         const dropzone = document.getElementById('dropzone-overlay');
 
         if (chatArea && dropzone) {
@@ -188,7 +258,7 @@ const App = {
         }
     },
 
-    // 3. User Join Handler
+    // 3. Join Handler
     handleJoin(e) {
         e.preventDefault();
         const input = document.getElementById('username-input');
@@ -197,7 +267,6 @@ const App = {
 
         errorBox.classList.add('hidden');
 
-        // Client-side quick checks
         if (rawUsername.length < 2 || rawUsername.length > 20) {
             errorBox.textContent = 'Username must be between 2 and 20 characters.';
             errorBox.classList.remove('hidden');
@@ -211,7 +280,6 @@ const App = {
             return;
         }
 
-        // Pre-validate with REST API for instant duplicate detection
         fetch('/api/validate-username', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -228,22 +296,251 @@ const App = {
             this.currentUsername = data.sanitizedUsername;
             localStorage.setItem('campuschat_last_username', this.currentUsername);
 
-            // Switch to Chat Screen & Connect WebSocket
+            // Update user profile chip in sidebar
+            const myAvatar = document.getElementById('my-avatar');
+            const myUsernameLabel = document.getElementById('sidebar-my-username');
+            if (myAvatar) myAvatar.textContent = this.currentUsername.charAt(0).toUpperCase();
+            if (myUsernameLabel) myUsernameLabel.textContent = this.currentUsername;
+
+            // Reset active chat to #general
+            this.activeChat = {
+                type: 'CHANNEL',
+                id: 'general',
+                channel: { id: 'general', name: 'general', description: 'Public campus-wide discussions and announcements.' },
+                targetUser: null
+            };
+
             UI.showScreen('chat-screen');
+            UI.updateActiveChatHeader(this.activeChat, this.currentUsername);
+
             WSController.connect(this.currentUsername, {
                 onConnectSuccess: () => {
                     UI.showToast(`Welcome to CampusChat, ${this.currentUsername}!`, 'success');
                 },
-                onTypingReceived: (msg) => this.handleRemoteTyping(msg)
+                onMessageReceived: (msg) => this.handleIncomingMessage(msg)
             });
         })
-        .catch(err => {
-            errorBox.textContent = 'Unable to connect to server. Please try again.';
+        .catch(() => {
+            errorBox.textContent = 'Unable to connect to server. Please check your network connection.';
             errorBox.classList.remove('hidden');
         });
     },
 
-    // 4. Send Message Handler
+    // 4. Incoming Message Dispatcher
+    handleIncomingMessage(msg) {
+        if (!msg || !msg.type) return;
+
+        switch (msg.type) {
+            case 'CHANNEL_CHAT':
+            case 'CHAT':
+            case 'FILE': {
+                const isPrivate = !!msg.recipient;
+                if (isPrivate) {
+                    this.handleIncomingPrivateMessage(msg);
+                } else {
+                    this.handleIncomingChannelMessage(msg);
+                }
+                break;
+            }
+
+            case 'PRIVATE_CHAT':
+                this.handleIncomingPrivateMessage(msg);
+                break;
+
+            case 'JOIN':
+                UI.appendSystemMessage(`${msg.sender} joined the chat`);
+                UI.showToast(`${msg.sender} joined`, 'info');
+                break;
+
+            case 'LEAVE':
+                UI.appendSystemMessage(`${msg.sender} left the chat`);
+                UI.showToast(`${msg.sender} left`, 'info');
+                break;
+
+            case 'USERS_UPDATE':
+                if (msg.onlineUsers) this.onlineUsers = msg.onlineUsers;
+                if (msg.channels) {
+                    this.channels = msg.channels;
+                    WSController.subscribeToAllChannels(this.channels);
+                }
+                this.refreshSidebar();
+                break;
+
+            case 'CREATE_CHANNEL':
+                if (msg.channels) {
+                    this.channels = msg.channels;
+                    WSController.subscribeToAllChannels(this.channels);
+                    this.refreshSidebar();
+                }
+                UI.appendSystemMessage(msg.message || `New channel created by ${msg.sender}`);
+                UI.showToast(msg.message || 'New channel created', 'success');
+                break;
+
+            case 'HISTORY':
+                if (msg.channels) {
+                    this.channels = msg.channels;
+                    WSController.subscribeToAllChannels(this.channels);
+                }
+                if (msg.onlineUsers) {
+                    this.onlineUsers = msg.onlineUsers;
+                }
+                this.refreshSidebar();
+
+                // Check if history corresponds to current active chat
+                const isCurrentChannel = this.activeChat.type === 'CHANNEL' && msg.channelId &&
+                    msg.channelId.toLowerCase() === this.activeChat.id.toLowerCase();
+                const isCurrentDm = this.activeChat.type === 'DM' && msg.recipient &&
+                    msg.recipient.toLowerCase() === this.activeChat.targetUser.toLowerCase();
+
+                if (isCurrentChannel || isCurrentDm || (!msg.channelId && !msg.recipient)) {
+                    const chatContainer = document.getElementById('chat-messages');
+                    if (chatContainer) chatContainer.innerHTML = '';
+                    if (msg.history && Array.isArray(msg.history)) {
+                        msg.history.forEach(item => {
+                            UI.appendChatMessage(item, this.currentUsername, (mId, em) => this.handleReactClick(mId, em));
+                        });
+                    }
+                }
+                break;
+
+            case 'REACTION':
+                UI.updateMessageReactions(msg.targetMessageId, msg.reactions, this.currentUsername, (mId, em) => this.handleReactClick(mId, em));
+                break;
+
+            case 'TYPING':
+                this.handleRemoteTyping(msg);
+                break;
+
+            case 'ERROR':
+                UI.showToast(msg.message || 'An error occurred.', 'error');
+                if (msg.message && msg.message.includes('Username')) {
+                    WSController.disconnect();
+                    UI.showScreen('join-screen');
+                    const errorBox = document.getElementById('join-error');
+                    if (errorBox) {
+                        errorBox.textContent = msg.message;
+                        errorBox.classList.remove('hidden');
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+    },
+
+    handleIncomingChannelMessage(msg) {
+        const channelId = (msg.channelId || 'general').toLowerCase();
+        const isCurrentActive = this.activeChat.type === 'CHANNEL' && this.activeChat.id.toLowerCase() === channelId;
+
+        if (isCurrentActive) {
+            UI.appendChatMessage(msg, this.currentUsername, (mId, em) => this.handleReactClick(mId, em));
+        } else {
+            const key = `channel:${channelId}`;
+            this.unreadCounts[key] = (this.unreadCounts[key] || 0) + 1;
+            this.refreshSidebar();
+            if (msg.sender && msg.sender.toLowerCase() !== this.currentUsername.toLowerCase()) {
+                UI.showToast(`[#${channelId}] ${msg.sender}: ${msg.message || 'Shared a file'}`, 'info');
+            }
+        }
+    },
+
+    handleIncomingPrivateMessage(msg) {
+        const sender = (msg.sender || '').toLowerCase();
+        const recipient = (msg.recipient || '').toLowerCase();
+        const self = this.currentUsername.toLowerCase();
+
+        // Identify the peer in this 1-on-1 DM
+        const peer = sender === self ? recipient : sender;
+        const isCurrentActive = this.activeChat.type === 'DM' && this.activeChat.targetUser.toLowerCase() === peer;
+
+        if (isCurrentActive) {
+            UI.appendChatMessage(msg, this.currentUsername, (mId, em) => this.handleReactClick(mId, em));
+        } else {
+            const key = `dm:${peer}`;
+            this.unreadCounts[key] = (this.unreadCounts[key] || 0) + 1;
+            this.refreshSidebar();
+            if (sender !== self) {
+                UI.showToast(`[@${msg.sender}] Direct Message: ${msg.message || 'Shared a file'}`, 'info');
+            }
+        }
+    },
+
+    // 5. Sidebar Navigation & Selection
+    selectChannel(channel) {
+        if (!channel) return;
+        this.activeChat = {
+            type: 'CHANNEL',
+            id: channel.id,
+            channel: channel,
+            targetUser: null
+        };
+
+        // Clear unread
+        delete this.unreadCounts[`channel:${channel.id.toLowerCase()}`];
+
+        UI.updateActiveChatHeader(this.activeChat, this.currentUsername);
+        this.refreshSidebar();
+
+        // Clear existing messages and request history
+        const chatContainer = document.getElementById('chat-messages');
+        if (chatContainer) chatContainer.innerHTML = '';
+        WSController.subscribeToChannel(channel.id);
+        WSController.requestHistory('CHANNEL', channel.id);
+
+        // Close mobile drawer if open
+        document.getElementById('chat-sidebar').classList.remove('open');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        if (backdrop) backdrop.classList.remove('active');
+    },
+
+    selectDmUser(user) {
+        if (!user) return;
+        this.activeChat = {
+            type: 'DM',
+            id: null,
+            channel: null,
+            targetUser: user.username
+        };
+
+        // Clear unread
+        delete this.unreadCounts[`dm:${user.username.toLowerCase()}`];
+
+        UI.updateActiveChatHeader(this.activeChat, this.currentUsername);
+        this.refreshSidebar();
+
+        // Clear existing messages and request history
+        const chatContainer = document.getElementById('chat-messages');
+        if (chatContainer) chatContainer.innerHTML = '';
+        WSController.requestHistory('DM', user.username);
+
+        // Close mobile drawer if open
+        document.getElementById('chat-sidebar').classList.remove('open');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        if (backdrop) backdrop.classList.remove('active');
+    },
+
+    refreshSidebar() {
+        const activeChannelId = this.activeChat.type === 'CHANNEL' ? this.activeChat.id : null;
+        const activeDmUser = this.activeChat.type === 'DM' ? this.activeChat.targetUser : null;
+
+        UI.renderChannelsList(
+            this.channels,
+            activeChannelId,
+            this.unreadCounts,
+            (ch) => this.selectChannel(ch)
+        );
+
+        UI.renderDirectUsersList(
+            this.onlineUsers,
+            this.currentUsername,
+            activeDmUser,
+            this.unreadCounts,
+            (u) => this.selectDmUser(u)
+        );
+    },
+
+    // 6. Send Message Handler
     handleSendMessage(e) {
         if (e) e.preventDefault();
         const textarea = document.getElementById('message-input');
@@ -257,31 +554,85 @@ const App = {
             return;
         }
 
-        const sent = WSController.sendMessage(text);
+        let sent = false;
+        if (this.activeChat.type === 'DM') {
+            sent = WSController.sendPrivateMessage(this.activeChat.targetUser, text);
+        } else {
+            sent = WSController.sendChannelMessage(this.activeChat.id, text);
+        }
+
         if (sent) {
             textarea.value = '';
+            textarea.style.height = '';
             this.updateCharCounter();
             textarea.focus();
             this.sendTypingStatus(false);
+
+            const messagesContainer = document.getElementById('chat-messages');
+            if (messagesContainer) {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
         }
     },
 
     handleKeydown(e) {
-        // Submit on Enter without Shift key
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             this.handleSendMessage();
         }
     },
 
-    // 5. Typing Indicator Logic
-    handleInputTyping() {
-        this.updateCharCounter();
+    // 7. Reactions & Emoji Handling
+    handleReactClick(messageId, emoji) {
+        const targetId = this.activeChat.type === 'DM' ? this.activeChat.targetUser : this.activeChat.id;
+        WSController.sendReaction(messageId, emoji, this.activeChat.type, targetId);
+    },
 
-        // Send typing indicator true
+    // 8. Create Channel Handler
+    handleCreateChannelSubmit(e) {
+        e.preventDefault();
+        const nameInput = document.getElementById('channel-name-input');
+        const descInput = document.getElementById('channel-desc-input');
+        const errBox = document.getElementById('create-channel-error');
+
+        const rawName = nameInput ? nameInput.value.trim() : '';
+        const rawDesc = descInput ? descInput.value.trim() : '';
+
+        if (errBox) errBox.classList.add('hidden');
+
+        if (rawName.length < 2 || rawName.length > 30) {
+            if (errBox) {
+                errBox.textContent = 'Channel name must be between 2 and 30 characters.';
+                errBox.classList.remove('hidden');
+            }
+            return;
+        }
+
+        const validPattern = /^[a-zA-Z0-9 _-]+$/;
+        if (!validPattern.test(rawName)) {
+            if (errBox) {
+                errBox.textContent = 'Channel name contains invalid characters. Use letters, numbers, spaces, _ or -.';
+                errBox.classList.remove('hidden');
+            }
+            return;
+        }
+
+        WSController.createChannel(rawName, rawDesc);
+
+        const modal = document.getElementById('create-channel-modal');
+        if (modal) modal.classList.add('hidden');
+    },
+
+    // 9. Typing Indicators
+    handleInputTyping() {
+        const textarea = document.getElementById('message-input');
+        if (textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+        this.updateCharCounter();
         this.sendTypingStatus(true);
 
-        // Debounce 1 second of inactivity to clear typing indicator
         if (this.typingTimeout) clearTimeout(this.typingTimeout);
         this.typingTimeout = setTimeout(() => {
             this.sendTypingStatus(false);
@@ -304,7 +655,8 @@ const App = {
     },
 
     sendTypingStatus(isTyping) {
-        WSController.sendTyping(isTyping);
+        const targetId = this.activeChat.type === 'DM' ? this.activeChat.targetUser : this.activeChat.id;
+        WSController.sendTyping(isTyping, this.activeChat.type, targetId);
     },
 
     handleRemoteTyping(msg) {
@@ -314,11 +666,21 @@ const App = {
         const typingText = document.getElementById('typing-text');
         if (!indicatorContainer || !typingText) return;
 
+        // Check if typing is relevant to current active chat
+        let isRelevant = false;
+        if (this.activeChat.type === 'CHANNEL' && msg.channelId &&
+            msg.channelId.toLowerCase() === this.activeChat.id.toLowerCase()) {
+            isRelevant = true;
+        } else if (this.activeChat.type === 'DM' && msg.sender.toLowerCase() === this.activeChat.targetUser.toLowerCase()) {
+            isRelevant = true;
+        }
+
+        if (!isRelevant) return;
+
         if (msg.isTyping) {
             typingText.textContent = `${UI.escapeHtml(msg.sender)} is typing...`;
             indicatorContainer.classList.remove('hidden');
 
-            // Auto-clear after 2 seconds if stop signal missed
             if (this.remoteTypingTimers[msg.sender]) {
                 clearTimeout(this.remoteTypingTimers[msg.sender]);
             }
@@ -333,16 +695,7 @@ const App = {
         }
     },
 
-    // 6. Leave Chat
-    handleLeaveChat() {
-        WSController.disconnect();
-        this.currentUsername = '';
-        document.getElementById('chat-messages').innerHTML = '';
-        UI.showScreen('join-screen');
-        UI.showToast('You have left the chat.', 'info');
-    },
-
-    // 7. File Upload Handler
+    // 10. File Upload Handler (Scoped to active channel or active 1-on-1 DM)
     uploadFile(file) {
         if (!file) return;
 
@@ -351,9 +704,9 @@ const App = {
             return;
         }
 
-        const maxSize = 50 * 1024 * 1024; // 50 MB limit
+        const maxSize = 500 * 1024 * 1024; // 500 MB limit
         if (file.size > maxSize) {
-            UI.showToast('File size exceeds the 50MB limit.', 'error');
+            UI.showToast('File size exceeds the 500MB limit.', 'error');
             return;
         }
 
@@ -370,6 +723,12 @@ const App = {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('sender', this.currentUsername);
+
+        if (this.activeChat.type === 'DM') {
+            formData.append('recipient', this.activeChat.targetUser);
+        } else {
+            formData.append('channelId', this.activeChat.id);
+        }
 
         const xhr = new XMLHttpRequest();
         xhr.open('POST', '/api/files/upload', true);
@@ -390,7 +749,7 @@ const App = {
                 try {
                     const res = JSON.parse(xhr.responseText);
                     UI.showToast(res.message || 'File upload failed.', 'error');
-                } catch(err) {
+                } catch {
                     UI.showToast('File upload failed.', 'error');
                 }
             }
@@ -402,6 +761,16 @@ const App = {
         };
 
         xhr.send(formData);
+    },
+
+    // 11. Leave Chat
+    handleLeaveChat() {
+        WSController.disconnect();
+        this.currentUsername = '';
+        this.unreadCounts = {};
+        document.getElementById('chat-messages').innerHTML = '';
+        UI.showScreen('join-screen');
+        UI.showToast('You have left the chat.', 'info');
     }
 };
 

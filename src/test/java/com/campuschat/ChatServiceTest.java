@@ -1,6 +1,7 @@
 package com.campuschat;
 
 import com.campuschat.exception.ChatException;
+import com.campuschat.model.Channel;
 import com.campuschat.model.ChatMessage;
 import com.campuschat.model.User;
 import com.campuschat.service.ChatService;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,6 +21,7 @@ class ChatServiceTest {
     @BeforeEach
     void setUp() {
         chatService = new ChatService();
+        chatService.initDefaultChannels();
     }
 
     @Test
@@ -88,10 +91,103 @@ class ChatServiceTest {
     }
 
     @Test
-    @DisplayName("Chat history should bound at 100 messages")
+    @DisplayName("Default channels should be initialized")
+    void testDefaultChannels() {
+        List<Channel> channels = chatService.getAllChannels();
+        assertTrue(channels.size() >= 4);
+        assertNotNull(chatService.getChannel("general"));
+        assertNotNull(chatService.getChannel("study-group"));
+        assertNotNull(chatService.getChannel("code-snippets"));
+        assertNotNull(chatService.getChannel("random"));
+    }
+
+    @Test
+    @DisplayName("Create custom channel should work and sanitize input")
+    void testCreateCustomChannel() {
+        Channel created = chatService.createChannel("Web Dev", "Discussion for frontend and backend", "Sam");
+        assertNotNull(created);
+        assertEquals("web-dev", created.getId());
+        assertEquals("Web Dev", created.getName());
+        assertEquals("Discussion for frontend and backend", created.getDescription());
+
+        // Duplicate channel creation should fail
+        assertThrows(ChatException.class, () -> chatService.createChannel("web dev", "duplicate", "Arun"));
+    }
+
+    @Test
+    @DisplayName("Channel message should isolate history per channel")
+    void testChannelHistoryIsolation() {
+        ChatMessage msgGeneral = new ChatMessage("Sam", "Hello General", ChatMessage.MessageType.CHAT);
+        msgGeneral.setChannelId("general");
+        chatService.processChannelMessage(msgGeneral);
+
+        ChatMessage msgStudy = new ChatMessage("Arun", "Hello Study", ChatMessage.MessageType.CHAT);
+        msgStudy.setChannelId("study-group");
+        chatService.processChannelMessage(msgStudy);
+
+        List<ChatMessage> genHistory = chatService.getChannelHistory("general");
+        List<ChatMessage> studyHistory = chatService.getChannelHistory("study-group");
+
+        assertEquals(1, genHistory.size());
+        assertEquals("Hello General", genHistory.get(0).getMessage());
+
+        assertEquals(1, studyHistory.size());
+        assertEquals("Hello Study", studyHistory.get(0).getMessage());
+    }
+
+    @Test
+    @DisplayName("1-on-1 private messaging should isolate history between pairs")
+    void testDirectMessagingIsolation() {
+        ChatMessage dm1 = new ChatMessage("Sam", "Hey Priya, can you share notes?", ChatMessage.MessageType.PRIVATE_CHAT);
+        dm1.setRecipient("Priya");
+        chatService.processPrivateMessage(dm1);
+
+        ChatMessage dm2 = new ChatMessage("Priya", "Sure Sam, here they are!", ChatMessage.MessageType.PRIVATE_CHAT);
+        dm2.setRecipient("Sam");
+        chatService.processPrivateMessage(dm2);
+
+        // Third party user
+        ChatMessage dm3 = new ChatMessage("Arun", "Hey Sam", ChatMessage.MessageType.PRIVATE_CHAT);
+        dm3.setRecipient("Sam");
+        chatService.processPrivateMessage(dm3);
+
+        List<ChatMessage> samPriyaHistory = chatService.getDmHistory("Sam", "Priya");
+        List<ChatMessage> priyaSamHistory = chatService.getDmHistory("Priya", "Sam");
+        List<ChatMessage> arunSamHistory = chatService.getDmHistory("Arun", "Sam");
+
+        assertEquals(2, samPriyaHistory.size());
+        assertEquals(2, priyaSamHistory.size());
+        assertEquals(1, arunSamHistory.size());
+    }
+
+    @Test
+    @DisplayName("Message emoji reaction toggle should add and remove reactions")
+    void testEmojiReactions() {
+        ChatMessage msg = new ChatMessage("Sam", "Check out this update!", ChatMessage.MessageType.CHAT);
+        msg.setChannelId("general");
+        chatService.processChannelMessage(msg);
+
+        // Sam reacts with 🔥
+        Map<String, List<String>> r1 = chatService.toggleReaction(msg.getId(), "general", null, "Sam", "🔥");
+        assertTrue(r1.containsKey("🔥"));
+        assertTrue(r1.get("🔥").contains("Sam"));
+
+        // Arun also reacts with 🔥
+        Map<String, List<String>> r2 = chatService.toggleReaction(msg.getId(), "general", null, "Arun", "🔥");
+        assertEquals(2, r2.get("🔥").size());
+
+        // Sam removes their 🔥 reaction (toggled again)
+        Map<String, List<String>> r3 = chatService.toggleReaction(msg.getId(), "general", null, "Sam", "🔥");
+        assertEquals(1, r3.get("🔥").size());
+        assertFalse(r3.get("🔥").contains("Sam"));
+    }
+
+    @Test
+    @DisplayName("Chat history should bound at 100 messages per channel")
     void testHistoryCapacity() {
         for (int i = 1; i <= 105; i++) {
             ChatMessage msg = new ChatMessage("User" + i, "Message " + i, ChatMessage.MessageType.CHAT);
+            msg.setChannelId("general");
             chatService.processAndAddMessage(msg);
         }
 

@@ -5,6 +5,7 @@
 /Users/samstanleya/develop/LAN CHAT_JAVA/src/main/java/com/campuschat/controller/ServerInfoController.java
 /Users/samstanleya/develop/LAN CHAT_JAVA/src/main/java/com/campuschat/exception/ChatException.java
 /Users/samstanleya/develop/LAN CHAT_JAVA/src/main/java/com/campuschat/exception/GlobalExceptionHandler.java
+/Users/samstanleya/develop/LAN CHAT_JAVA/src/main/java/com/campuschat/model/Channel.java
 /Users/samstanleya/develop/LAN CHAT_JAVA/src/main/java/com/campuschat/model/ChatMessage.java
 /Users/samstanleya/develop/LAN CHAT_JAVA/src/main/java/com/campuschat/model/FileMetadata.java
 /Users/samstanleya/develop/LAN CHAT_JAVA/src/main/java/com/campuschat/model/ServerInfo.java
